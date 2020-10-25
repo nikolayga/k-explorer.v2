@@ -1,0 +1,297 @@
+#preloader {
+  position: fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background-color:#E2E2E2; /* change if the mask should have another color then white */
+  z-index:99999; /* makes sure it stays on top */
+}
+#status {
+  width:100px;
+  height:100px;
+  position:absolute;
+  left:50%; /* centers the loading animation horizontally one the screen */
+  top:50%; /* centers the loading animation vertically one the screen */
+  background-image:url("/assets/images/preloader.gif");
+  z-index:9999; /* path to your loading animation */
+  background-repeat:no-repeat;
+  background-position:center;
+  margin:-10px 0 0 -36px; /* is width and height divided by two */
+}
+	
+
+.max-100 {
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.max-230 {
+    max-width: 230px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.max-320 {
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.max-90p{
+	max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border:0px;
+}
+
+.max-33p{
+	max-width: 33%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.max-70p{
+	max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bottom-menu {
+	height:20px;
+}
+.card1 {
+    border-radius: 12px;
+    box-shadow: 0 6px 10px -4px rgba(0,0,0,.15);
+    background-color: #fff;
+    color: #252422;
+    margin-bottom: 20px;
+    position: relative;
+    border: 0;
+    transition: box-shadow .2s ease,-webkit-transform .3s cubic-bezier(.34,2,.6,1);
+    transition: transform .3s cubic-bezier(.34,2,.6,1),box-shadow .2s ease;
+    transition: transform .3s cubic-bezier(.34,2,.6,1),box-shadow .2s ease,-webkit-transform .3s cubic-bezier(.34,2,.6,1);
+}
+
+.card1 {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-clip: border-box;
+}
+
+.card-stats .card-body {
+    padding: 15px 15px 0;
+}
+
+.card-stats .card-body .numbers {
+    text-align: right;
+    font-size: 2em;
+}
+
+.card-stats .card-footer {
+    padding: 0 15px 15px;
+}
+.card .card-footer {
+    background-color: transparent;
+    border: 0;
+}
+.card-footer:last-child {
+    border-radius: 0 0 calc(.25rem - 1px) calc(.25rem - 1px);
+}
+
+.card-stats .card-body .numbers .card-category {
+    color: #9a9a9a;
+    font-size: 16px;
+    line-height: 1.4em;
+}
+.card-stats .card-body .numbers p {
+    margin-bottom: 0;
+}
+.card-category {
+    font-size: 1em;
+}
+.card-category, .category {
+    text-transform: capitalize;
+    font-weight: 400;
+    color: #9a9a9a;
+    font-size: .7142em;
+}
+.card-stats .card-footer .stats {
+    color: #9a9a9a;
+}
+
+.numbers small{
+	font-size:14px;
+}
+
+
+._bar_tabs{margin-bottom:10px;height:32px;}
+._bar_tabs li a.wkitty {
+    padding: 0px 0 0 0 !important;
+}
+
+._bar_tabs > li > a {
+  border-color: #eeeeee #eeeeee #ddd;
+  color:#555;
+}
+
+ul._bar_tabs>li a {
+    padding: 10px 17px;
+    background: #F5F7FA;
+    margin-top:3px;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+    color: #555;
+    cursor: default;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-bottom-color: rgb(221, 221, 221);
+    border-bottom-color: transparent;
+	border-bottom: 4px solid #fff;
+}
+
+.nav-tabs > li > a {
+    margin-right: 2px;
+    line-height: 1.42857143;
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+}
+
+
+@media (max-width:1400px) { 
+	.logo-title{display:none;}
+
+}
+
+@media (max-width:790px) { 
+	.logo-net-type{display:none;}
+
+}
+
+@media (max-width:768px) { 
+	[role="main"] {
+	  padding-top: 50px; 
+	}
+	
+	.small-menu {display:block !important;}
+}
+
+.small-menu a{
+	color: #6c757d;
+}
+
+.small-menu a.active{
+	color: #007bff;
+}
+
+.h5, h5 {
+    font-size: 0.9rem;
+}
+
+
+.dropdown.dropdown-lg .dropdown-menu {
+    margin-top: -1px;
+    padding: 6px 20px;
+}
+.input-group-btn .btn-group {
+    display: flex !important;
+}
+.btn-group .btn {
+    border-radius: 0;
+    margin-left: -1px;
+}
+.btn-group .btn:last-child {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+.btn-group .form-horizontal .btn[type="submit"] {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.form-horizontal .form-group {
+    margin-left: 0;
+    margin-right: 0;
+}
+.form-group .form-control:last-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+@media screen and (min-width: 768px) {
+    #deposits-search {
+        width: 500px;
+        margin: 0 auto;
+    }
+    .dropdown.dropdown-lg {
+        position: static !important;
+    }
+    .dropdown.dropdown-lg .dropdown-menu {
+        /*min-width: 500px;*/
+        width: 458px;
+    }
+}
+
+ 
+.table-compact td, .table-compact th {
+    padding: 0.25rem !important;
+}
+
+.table-compact .badge{
+	font-size: 100%;
+	font-weight: normal;
+	line-height: 14px;
+	margin-top: 5px;
+}
+
+.profile--new {
+    /*border-top: 1px solid #343a40;*/
+    border-bottom: 2px solid #343a40;
+    margin-top: 20px;
+    padding-bottom: 7px;
+}
+
+.profile_pic {
+    width: 20%;
+    float: left;
+}
+
+.profile--new h2 {
+    color: #fff;
+    margin-bottom: 10px;
+}
+.login-block h2 {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.profile_info h2 {
+    font-size: 14px;
+    color: #ECF0F1;
+    margin: 0;
+    font-weight: 300;
+}
+
+.img-circle.profile_img {
+    width: 50%;
+    background: #fff;
+    margin-left: 15%;
+    z-index: 1000;
+    position: inherit;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid rgba(52,73,94,.44);
+    padding: 4px;
+}
+.img-circle {
+    border-radius: 50%;
+}
