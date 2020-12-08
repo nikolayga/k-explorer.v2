@@ -2,14 +2,19 @@ window.account = null;
 
 $(document).ready(function() {
 	feather.replace()
+	//$.fn.dataTableExt.pager.numbers_length = 50;
 	
-	if($('#deposites').length>0){
-		$('#deposites').DataTable({
+	if($('.js--data-table').length>0){
+		var sort_col = 0;
+		if($('.js--data-table').data('sort-col')) sort_col = parseInt($('.js--data-table').data('sort-col'));
+		var table  = $('.js--data-table').DataTable({
+			pageLength: 50,
 			columnDefs: [
 			  { targets: 'no-sort', orderable: false }
 			],
-			 "order": [[ 0, "desc" ]]
+			 "order": [[ sort_col, "desc" ]]
 		});
+
 	}
 	$('[data-toggle="tooltip"]').tooltip()
 });
@@ -30,6 +35,12 @@ $(document).on('click','.js-auth',function(e){
 	connect();
 });
 
+$(document).on('submit','.js--form',function(e){
+	$(this).find('input,select').each(function(){
+		if($(this).val()=="") $(this).attr('disabled','disabled');
+	});
+});
+
 $(window).on('load', function () {
 	if (typeof web3 !== 'undefined'){
 		if (typeof ethereum !== 'undefined') {
@@ -43,7 +54,7 @@ $(window).on('load', function () {
 				ethereum.on('accountsChanged', function (accounts) {
 					if(accounts==""){
 						$.post( "/ajax/auth/", {address: 'none', confirmed:0}, function( data ) {
-							updateInterface();
+							if($('#address_name').length>0) updateInterface();
 						});
 					}else{
 						var account = accounts[0];
@@ -127,4 +138,22 @@ async function check() {
 
 function updateInterface(){
 	location.reload();
+}
+
+function number_format( number, decimals = 0, dec_point = '.', thousands_sep = ',' ) {
+  let sign = number < 0 ? '-' : '';
+  let s_number = Math.abs(parseInt(number = (+number || 0).toFixed(decimals))) + "";
+  let len = s_number.length;
+  let tchunk = len > 3 ? len % 3 : 0;
+
+  let ch_first = (tchunk ? s_number.substr(0, tchunk) + thousands_sep : '');
+  let ch_rest = s_number.substr(tchunk)
+    .replace(/(\d\d\d)(?=\d)/g, '$1' + thousands_sep);
+  let ch_last = decimals ?
+    dec_point + (Math.abs(number) - s_number)
+      .toFixed(decimals)
+      .slice(2) :
+    '';
+
+  return sign + ch_first + ch_rest + ch_last;
 }
