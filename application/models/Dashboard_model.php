@@ -56,7 +56,7 @@ class Dashboard_model extends CI_Model {
     }
 	
 	public function get_transfers_stat(){     
-        $query = $this->db->query("SELECT COUNT(*) as counter, DATE_FORMAT(format_date, '%Y-%m-%d') as `date` FROM TokenContract
+        $query = $this->db->query("SELECT ROUND(SUM(value),2) as counter, DATE_FORMAT(format_date, '%Y-%m-%d') as `date` FROM TokenContract
               WHERE `from`!='0x0000000000000000000000000000000000000000' and `to`!='0x0000000000000000000000000000000000000000'
               GROUP by format_date order by format_date asc");
               
@@ -66,6 +66,17 @@ class Dashboard_model extends CI_Model {
 		}	
     }
     
+	public function get_keeptransfers_stat(){     
+        $query = $this->db->query("SELECT ROUND(SUM(value)) as counter, DATE_FORMAT(format_date, '%Y-%m-%d') as `date` FROM KeepToken
+              WHERE `from`!='0x0000000000000000000000000000000000000000' and `to`!='0x0000000000000000000000000000000000000000'
+              GROUP by format_date order by format_date asc");
+              
+        if ($result = $query->result_array())
+		{
+			file_put_contents($_SERVER['DOCUMENT_ROOT']."/assets/json-data/keeptransfers.json",json_encode($result));
+		}	
+    }
+	
     public function get_redeemed_stat(){     
         $query = $this->db->query("SELECT COUNT(*) as counter, DATE_FORMAT(t1.format_date, '%Y-%m-%d') as `date` FROM systemContract AS t1
               WHERE t1.event='Created' AND t1._depositContractAddress IN 
