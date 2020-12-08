@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="KEEP Explorer helps to view information about deposits, shows detailed information about deposit process. Also provides search deposits by address feature.">
-    <meta name="author" content="Nikolay Gassyuk">
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website">
@@ -46,6 +45,17 @@
     <!-- Custom styles for this template -->
     <link href="<?php echo base_url() ?>assets/css/dashboard.css" rel="stylesheet">
     <link href="<?php echo base_url() ?>assets/css/app.css" rel="stylesheet">
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-179160591-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-179160591-1');
+	</script>
+	
   </head>
   <body style="overflow: hidden;">
   
@@ -90,9 +100,6 @@
 					  Dashboard 
 					</a>
 				  </li>
-				  <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-					  <span>History</span>
-				   </h6>
 				
 				  <li class="nav-item">
 					<a class="nav-link <?=$this->uri->segment(1)=="deposits"?'active':''?>" href="/deposits/" >
@@ -101,17 +108,38 @@
 					</a>
 				  </li>
 				  <li class="nav-item">
-					<a class="nav-link <?=$this->uri->segment(1)=="tbtc_mints"?'active':''?>" href="/tbtc_mints/">
-					  <span data-feather="layers"></span>
-					  tBTC mints
+					<a class="nav-link <?=$this->uri->segment(1)=="operators"?'active':''?>" href="/operators/" >
+					  <span data-feather="users"></span>
+					  Operators
+					</a>
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link <?=$this->uri->segment(1)=="grants"?'active':''?>" href="/grants/">
+					  <span data-feather="award"></span>
+					  Grants
+					</a>
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link <?=$this->uri->segment(1)=="keeptransfers"?'active':''?>" href="/keeptransfers/">
+					  <span data-feather="repeat"></span>
+					  KEEP Transfers
 					</a>
 				  </li>
 				  <li class="nav-item">
 					<a class="nav-link <?=$this->uri->segment(1)=="transfers"?'active':''?>" href="/transfers/">
 					  <span data-feather="repeat"></span>
-					  Transfers
+					  tBTC Transfers
 					</a>
 				  </li>
+				  <li class="nav-item">
+					<a class="nav-link <?=$this->uri->segment(1)=="tbtc_mints"?'active':''?>" href="/tbtc_mints/">
+					  <span data-feather="layers"></span>
+					  tBTC mints
+					</a>
+				  </li>
+				  
+
+				  
 				</ul>
 			  </div>
 		</nav>
