@@ -51,14 +51,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['deposits'] = 'deposits/index';
 $route['tbtc_mints'] = 'tbtc_mints/index';
+$route['grants'] = 'grants/index';
 $route['transfers'] = 'transfers/index';
+$route['keeptransfers'] = 'keeptransfers/index';
 $route['find'] = 'find/index';
+$route['operators'] = 'operators/index';
 
 $route['ajax/auth'] = 'ajax/auth';
 $route['ajax/subscribe-confirmation'] = 'ajax/send_subscribe_confirmation';
 
 $route['deposit/(:any)'] = 'deposits/view/$1';
-
+$route['grants/(:any)'] = 'grants/view/$1';
+$route['operators/(:any)'] = 'operators/view/$1';
 
 $route['default_controller'] = 'pages/view';
 $route['(:any)'] = 'pages/view/$1';
