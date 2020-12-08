@@ -4,16 +4,6 @@ class Deposits_model extends CI_Model {
         $this->load->database();
     }
 	
-	/*
-	public function get_list($all = false, $limit = false, $offset = false){
-        $limit_sql = "";
-        if($all==false)  $limit_sql = "LIMIT ".intval($limit)." OFFSET ".intval($offset);
-        $sql = "select t.*,(select s.event from `systemContract` as s where s._depositContractAddress = t._depositContractAddress and s.event='Funded') as isFunded,(select p.event from `systemContract` as p where p._depositContractAddress = t._depositContractAddress and p.event='Redeemed') as isRedeemed from `systemContract` as t where t.event='Created' order by t.`date` DESC $limit_sql ";
-        $query = $this->db->query($sql);
-        return $query->result_array();
-    }
-	*/
-	
 	public function get_lot_list(){
         $sql = "SELECT distinct(lotsize) from depositHistory order by lotsize asc";
         $query = $this->db->query($sql);
@@ -24,13 +14,27 @@ class Deposits_model extends CI_Model {
         $this->load->helper('helper');
         
         if($all==false) $this->db->limit($limit, $offset);
-        $this->db->order_by('datetime', 'DESC');
+        if(!empty($_REQUEST['sorting']) && $_REQUEST['sorting']=='updated') $this->db->order_by('updated', 'DESC');
+			else $this->db->order_by('datetime', 'DESC');
+			
         $this->db->from('depositHistory');
 		
-		if(!empty($_REQUEST['state']) && intval($_REQUEST['state'])>=1 && intval($_REQUEST['state'])<=11) $this->db->where('currentState', intval($_REQUEST['state']));
-		if(!empty($_REQUEST['lotsize']) && floatval($_REQUEST['lotsize'])>0 && floatval($_REQUEST['lotsize'])<=10) $this->db->where('lotsize', floatval($_REQUEST['lotsize']));
-		if(!empty($_REQUEST['depositAddr']) && isEtheriumAddress(trim($_REQUEST['depositAddr']))) $this->db->where('depositContractAddress', trim($_REQUEST['depositAddr']));
+		if(!empty($_REQUEST['state']) && is_numeric($_REQUEST['state']) && intval($_REQUEST['state'])>=1 && intval($_REQUEST['state'])<=11) {
+			$this->db->where('currentState', intval($_REQUEST['state']));
+			if(intval($_REQUEST['state'])==3) $this->db->where('_signingGroupPubkeyX is null');
+		}elseif(!empty($_REQUEST['state']) && $_REQUEST['state']=='f') {
+			$this->db->where('_signingGroupPubkeyX is not null');
+			$this->db->where('currentState', 3);
+		}
 		
+		if(!empty($_REQUEST['lotsize']) && floatval($_REQUEST['lotsize'])>0 && floatval($_REQUEST['lotsize'])<=10) $this->db->where('lotsize', floatval($_REQUEST['lotsize']));
+		if(!empty($_REQUEST['isminted']) && intval($_REQUEST['isminted'])==1) $this->db->where('isMinted', 1);
+		if(!empty($_REQUEST['isminted']) && intval($_REQUEST['isminted'])==-1) $this->db->where('(isMinted is null or isMinted=0)');
+		if(!empty($_REQUEST['depositAddr']) && isEtheriumAddress(trim($_REQUEST['depositAddr']))) $this->db->where('depositContractAddress', trim($_REQUEST['depositAddr']));
+		if(!empty($_REQUEST['operatorAddr']) && isEtheriumAddress(trim($_REQUEST['operatorAddr']))){
+			$where = "keepMembers LIKE '%".htmlentities($_REQUEST['operatorAddr'])."%'";
+			$this->db->where($where);
+		}
 		if(!empty($_REQUEST['ctn']) && intval($_REQUEST['ctn'])>0) {
 			$client = new Codenixsv\CoinGeckoApi\CoinGeckoClient();
 			$data_cur = $client->simple()->getPrice('ethereum,bitcoin', 'usd,btc');
@@ -52,6 +56,12 @@ class Deposits_model extends CI_Model {
         return $query->result_array();
     }
     
+	public function get_total(){
+		$sql = "SELECT COUNT(*) as total from depositHistory ";
+        $query = $this->db->query($sql);
+        return $query->result_array()[0]['total'];
+	}
+	
     public function get($address){
         $this->load->helper('helper');
         $result = array();
@@ -91,8 +101,16 @@ class Deposits_model extends CI_Model {
 		$this->db->where('depositContractAddress', $address);
 		$this->db->update('depositHistory');
     }
-	
-	 public function subscribeDeposit($data){
+    
+	public function saveState($address,$state){
+        $result = array();
+        
+        $this->db->set('currentState', $state, true);
+		$this->db->where('depositContractAddress', $address);
+		$this->db->update('depositHistory');
+    }
+    
+	public function subscribeDeposit($data){
         $query = $this->db->get_where('depositEventsSubscribe', array('address' => $data['address'],'contractAddress'=>$data['contractAddress']));
         if($exist = $query->result_array()){
 			foreach($data as $key=>$v) $this->db->set($key, $v, true);
