@@ -37,14 +37,23 @@ class Ajax extends CI_Controller {
 		
 		if(isset($_POST['code']) && !empty($_POST['code']) && !empty($_SESSION['AUTH']['ADDRESS'])){
 			if(trim($_POST['code'])==$_SESSION['EMAIL_CONFIRMATION_CODE']){
-				$this->load->model('deposits_model');
-				$data = array('email'=>$_SESSION['EMAIL'],'address'=>$_SESSION['AUTH']['ADDRESS'],'contractAddress'=>$_POST['contractAddress']);
-				$this->deposits_model->subscribeDeposit($data);
-				$result['success']=true;
-				$result['action']='subscribe';
-				$_SESSION['EMAIL_CONFIRMATION_CODE'] = null;
-				$_SESSION['EMAIL'] = null;
-				
+				if(!empty($_POST['contractAddress'])){
+					$this->load->model('deposits_model');
+					$data = array('email'=>$_SESSION['EMAIL'],'address'=>$_SESSION['AUTH']['ADDRESS'],'contractAddress'=>$_POST['contractAddress']);
+					$this->deposits_model->subscribeDeposit($data);
+					$result['success']=true;
+					$result['action']='subscribe';
+					$_SESSION['EMAIL_CONFIRMATION_CODE'] = null;
+					$_SESSION['EMAIL'] = null;
+				}elseif(!empty($_POST['operatorAddress'])){
+					$this->load->model('operators_model');
+					$data = array('email'=>$_SESSION['EMAIL'],'address'=>$_SESSION['AUTH']['ADDRESS'],'operator'=>$_POST['operatorAddress']);
+					$this->operators_model->subscribeOperator($data);
+					$result['success']=true;
+					$result['action']='subscribe';
+					$_SESSION['EMAIL_CONFIRMATION_CODE'] = null;
+					$_SESSION['EMAIL'] = null;
+				}
 			}else{
 				$result['success']=false;
 				$result['action']='wrong_code';
@@ -61,12 +70,30 @@ class Ajax extends CI_Controller {
 			$_SESSION['EMAIL'] = null;
 		}
 		
+		if(isset($_POST['unsubscribe']) && $_POST['unsubscribe']=="Y" && !empty($_POST['operatorAddress'])){
+			$this->load->model('operators_model');
+			$data = array('address'=>$_SESSION['AUTH']['ADDRESS'],'operator'=>$_POST['operatorAddress']);
+			$this->operators_model->unsubscribeOperator($data);
+			$result['success']=true;
+			$result['action']='unsubscribe';
+			$_SESSION['EMAIL_CONFIRMATION_CODE'] = null;
+			$_SESSION['EMAIL'] = null;
+		}
+		
 		if(isset($_POST['save']) && $_POST['save']=='configuration' ){
-			$this->load->model('deposits_model');
 			$events = array();
 			if(!empty($_POST['event'])) $events = $_POST['event'];
-			$data = array('address'=>$_SESSION['AUTH']['ADDRESS'],'contractAddress'=>$_POST['contractAddress'],'events'=>json_encode($events));
-			$this->deposits_model->subscribeDeposit($data);
+			
+			if(!empty($_POST['contractAddress'])){
+				$this->load->model('deposits_model');
+				$data = array('address'=>$_SESSION['AUTH']['ADDRESS'],'contractAddress'=>$_POST['contractAddress'],'events'=>json_encode($events));
+				$this->deposits_model->subscribeDeposit($data);
+			}elseif(!empty($_POST['operatorAddress'])){
+				$this->load->model('operators_model');
+				$data = array('address'=>$_SESSION['AUTH']['ADDRESS'],'operator'=>$_POST['operatorAddress'],'events'=>json_encode($events));
+				if(!empty($_POST['collateralization'])) $data['collateralization'] = intval($_POST['collateralization']);
+				$this->operators_model->subscribeOperator($data);
+			}
 		}
 		
 		print json_encode($result);
