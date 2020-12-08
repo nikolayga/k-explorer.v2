@@ -2,15 +2,14 @@
 
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 mt-3 ">
 	
+	
 	<?php $this->view('templates/menu-mobile'); ?>
 	<h3 class="mb-3">
-	  Deposit contract
-	  <small class="text-muted"><?=$deposit['depositContractAddress']?> <a href="https://etherscan.io/address/<?=$deposit['depositContractAddress']?>" target="_blank"><span data-feather="link"></span></a></small>
+	  View deposit details
 	</h3>
 	<?
-	//$m = new \Moment\Moment($deposit['datetime']);
 	   $state = '<span class="badge badge-secondary">Processing</span>';
-	   
+	   $minted = '';
 	   if($deposit['currentState']==0){
 			$state = '<span class="badge badge-warning">Start</span>';
 	   }elseif($deposit['currentState']==1){
@@ -26,8 +25,9 @@
 			   $state = '<span class="badge badge-warning">Awaiting BTC funding proof '.$conf_detail.'</span>';
 		   }
 	   }elseif($deposit['currentState']==3){
-		   $state = '<span class="badge badge-danger">Failed</span>';
+		   $state = '<span class="badge badge-secondary">Failed</span>';
 	   }elseif($deposit['currentState']==4){
+		   if(isset($deposit['isMinted']) && $deposit['isMinted']==1)  $minted = '&nbsp;<img src="/assets/images/tbtc_32.png" width="16" title="tBTC minted" style="argin-top: -2px;">';
 		   $state = '<span class="badge badge-success">Active</span>';
 	   }elseif($deposit['currentState']==5){
 		   $state = '<span class="badge badge-warning">Awaiting withdrawal signature</span>';
@@ -36,25 +36,30 @@
 	   }elseif($deposit['currentState']==7){
 		   $state = '<span class="badge badge-dark">Redeemed</span>';
 	   }elseif($deposit['currentState']==8){
-		   $state = '<span class="badge badge-warning">Courtesy call</span>';
+		   $state = '<span class="badge badge-danger">Courtesy call</span>';
 	   }elseif($deposit['currentState']==9){
 		   $state = '<span class="badge badge-danger">Fraud liquidation in progress</span>';
 	   }elseif($deposit['currentState']==10){
-		   $state = '<span class="badge badge-warning">Liquidation in progress</span>';
+		   $state = '<span class="badge badge-danger">Liquidation in progress</span>';
 	   }elseif($deposit['currentState']==11){
-		   $state = '<span class="badge badge-secondary">Liquudated</span>';
+		   $state = '<span class="badge badge-danger">Liquudated</span>';
 	   }
 	?>
 	<div class="row row-eq-height">
-		<div class="col-md-12 col-lg-6">
+		<div class="col-md-12 col-lg-12 col-xl-6">
 			<div class="card h-100">
 			  <div class="card-body">
 				<h4 class="card-title">Deposit details</h4>
+				<div class="table-responsive">
 				<table class="table table-sm table-hover table-striped table-compact">
 				  <tbody>
 					<tr>
 					  <th scope="row">Current state</th>
-					  <td><?= $state?> <?if($deposit['currentState']==4 && $deposit['isMinted']==1):?><a href="https://dapp.tbtc.network/deposit/<?=$deposit['depositContractAddress']?>/redeem" target="_blank" class="btn btn-sm btn-info float-right">Redeem</a><?endif?></td>
+					  <td id="js--currentState" data-state="<?=$deposit['currentState']?>"><?= $state?><?=$minted?> <?if($deposit['currentState']==4 && $deposit['isMinted']==1):?><a href="https://dapp.tbtc.network/deposit/<?=$deposit['depositContractAddress']?>/redeem" target="_blank" class="btn btn-sm btn-info float-right">Redeem</a><?endif?></td>
+					</tr>
+					<tr>
+					  <th scope="row">Deposit contract</th>
+					  <td><div class="max-90p"><a href="https://etherscan.io/address/<?=$deposit['depositContractAddress']?>" target="_blank"><?=$deposit['depositContractAddress']?></a></div></td>
 					</tr>
 					<tr>
 					  <th scope="row">Lot size</th>
@@ -94,14 +99,15 @@
 					<?endif?>
 				  </tbody>
 				</table>
+				 </div>
 			  </div>
 			</div>
 		</div>
-		<div class="col-md-12 col-lg-6">
+		<div class="col-md-12 col-lg-12 col-xl-6">
 			<div class="card h-100">
 			  <div class="card-body">
 				<h4 class="card-title">Collateralization</h4>
-				
+				<div class="table-responsive">
 				<table class="table table-sm table-hover table-striped js--keep" data-keepaddr="<?=$deposit['keepAddress']?>" data-url="/<?=uri_string()?>">
 				  <tbody>
 					<tr>
@@ -115,7 +121,7 @@
 							  <?if(!empty($deposit['keepMembers'])):?>
 								  <?$deposit['keepMembers'] = explode(",",$deposit['keepMembers']);?>
 								  <?foreach($deposit['keepMembers'] as $member):?>
-									<a href="https://etherscan.io/address/<?=$member?>" target="_blank"><?=$member?></a><br>
+									<a href="/operators/<?=$member?>" target="_blank"><?=$member?></a><br>
 								  <?endforeach?>
 							  <?else:?>
 							  ...
@@ -176,7 +182,7 @@
 					<?endif?>
 				  </tbody>
 				</table>
-				
+				</div>
 			  </div>
 			</div>
 		</div>
@@ -185,7 +191,7 @@
 	<hr>
 	
 	<div class="row row-eq-height">
-		<div class="col-md-12 col-lg-6">
+		<div class="col-md-12 col-lg-12 col-xl-6">
 			<div class="card h-100">
 			  <div class="card-body">
 				<h4 class="card-title">Subscribe to deposit events</h4>
@@ -355,7 +361,19 @@
 				}
 			});
 		}
-
+		
+		if($('#js--currentState').length>0 && window.web3 ){
+			var depositAddress  = '<?=$deposit['depositContractAddress']?>';
+			var depositContract = new window.web3.eth.Contract(window.depositContractABI,depositAddress);
+			var url =  $('.js--keep').data('url');
+			depositContract.methods.currentState().call().then(function(result){
+				if(result>0 && parseInt($('#js--currentState').data('state'))!=parseInt(result)){
+					$.post( url, { state: result, updateState: "Y" }).done(function( data ) {
+						location.reload();
+					});
+				}
+			});
+		}
 	});
 </script>
 
